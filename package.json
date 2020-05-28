@@ -1,0 +1,73 @@
+{
+  "name": "engage-voice-client",
+  "version": "1.0.0",
+  "description": "RingCentral Engage Voice API js wrapper",
+  "main": "dist/index.js",
+  "scripts": {
+    "test": "standard && jest",
+    "release": "webpack --progress --colors",
+    "prepublishOnly": "npm run release"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zxdong262/engage-voice-client-js.git"
+  },
+  "keywords": [
+    "RingCentral",
+    "Engage",
+    "Voice",
+    "API",
+    "js",
+    "javescript",
+    "wrapper",
+    "SDK"
+  ],
+  "author": "Drake Zhao <drake.zhao@ringcentral.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/zxdong262/engage-voice-client-js/issues"
+  },
+  "homepage": "https://github.com/zxdong262/engage-voice-client-js#readme",
+  "dependencies": {
+    "ringcentral-js-concise": "^0.7.8"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.10.0",
+    "@babel/preset-env": "^7.10.0",
+    "@babel/register": "^7.9.0",
+    "babel-eslint": "^10.1.0",
+    "babel-jest": "^26.0.1",
+    "babel-loader": "^8.1.0",
+    "body-parser": "^1.19.0",
+    "concat-stream": "^2.0.0",
+    "dotenv-override-true": "^6.2.0",
+    "express": "^4.17.1",
+    "form-data": "^3.0.0",
+    "husky": "^4.2.5",
+    "jest": "^26.0.1",
+    "lodash": "^4.17.15",
+    "standard": "^14.3.4",
+    "timeout-as-promise": "^1.0.0",
+    "webpack": "^4.43.0",
+    "webpack-cli": "^3.3.11"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "roots": [
+      "./test"
+    ],
+    "setupFiles": [
+      "dotenv-override-true/config"
+    ]
+  },
+  "standard": {
+    "parser": "babel-eslint",
+    "ignore": [
+      "*-compiled.js",
+      "/dist/"
+    ]
+  },
+  "directories": {
+    "test": "test"
+  }
+}

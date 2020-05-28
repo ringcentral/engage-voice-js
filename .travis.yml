@@ -1,0 +1,13 @@
+matrix:
+  include:
+    - os: linux
+      language: node_js
+      node_js: "12"
+      dist: xenial
+
+script:
+  - npm run test
+
+branches:
+  - release
+  - test
