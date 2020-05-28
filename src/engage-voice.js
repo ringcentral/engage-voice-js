@@ -1,7 +1,7 @@
 import axios from 'axios'
 import RingCentral from 'ringcentral-js-concise'
 
-const { version } = process.env
+const version = process.env.version
 
 class HTTPError extends Error {
   constructor (status, statusText, data, config) {
@@ -17,19 +17,19 @@ config: ${JSON.stringify(config, null, 2)}`)
 }
 
 class RingCentralEngageVoice extends RingCentral {
-  constructor (
+  constructor ({
     clientId,
     clientSecret,
     server = 'https://engage.ringcentral.com/voice',
     authServer = 'https://engage.ringcentral.com',
     rcServer = 'https://platform.ringcentral.com'
-  ) {
-    super(clientId, clientSecret, rcServer)
+  }) {
+    super(clientId, clientSecret, server)
     this.clientId = clientId
     this.clientSecret = clientSecret
     this.server = server
     this.rcServer = rcServer
-    this.apiServer = authServer
+    this.authServer = authServer
     this.rc = new RingCentral(clientId, clientSecret, rcServer)
     this._axios = axios.create()
     const request = this._axios.request.bind(this._axios)
