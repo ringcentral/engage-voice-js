@@ -6,20 +6,18 @@ let ev
 beforeAll(async done => {
   jest.setTimeout(64000)
   ev = new RingCentral({
-    clientId: process.env.RINGCENTRAL_CLIENTID,
-    clientSecret: process.env.RINGCENTRAL_CLIENTSECRET
+    server: process.env.LAGECY_SERVER
   })
   await ev.authorize({
-    username: process.env.RINGCENTRAL_USERNAME,
-    extension: process.env.RINGCENTRAL_EXTENSION,
-    password: process.env.RINGCENTRAL_PASSWORD
+    username: process.env.LAGECY_USERNAME,
+    password: process.env.LAGECY_PASSWORD
   })
   console.log(ev._token)
   done()
 })
 
 afterAll(async done => {
-  await ev.rc.revoke()
+  await ev.revokeLagecyToken()
   done()
 })
 

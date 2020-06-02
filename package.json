@@ -1,14 +1,12 @@
 {
-  "name": "engage-voice-client",
+  "name": "ringcentral-engage-voice-client",
   "version": "1.0.0",
   "description": "RingCentral Engage Voice API js wrapper",
   "main": "dist/engage-voice.js",
   "scripts": {
-    "test": "standard && npm run release && jest",
+    "test": "standard && jest",
     "release": "webpack --progress --colors",
-    "prepublishOnly": "npm run release",
-    "clear": "jest --clearCache",
-    "run": "node -r @babel/register -r dotenv/config temp/test.js"
+    "prepublishOnly": "npm run release"
   },
   "repository": {
     "type": "git",
@@ -31,7 +29,10 @@
   },
   "homepage": "https://github.com/zxdong262/engage-voice-client-js#readme",
   "dependencies": {
-    "ringcentral-js-concise": "^0.7.8"
+    "axios": "^0.19.2",
+    "js-base64": "^2.5.2",
+    "multipart-mixed-parser": "^0.1.3",
+    "urijs": "^1.19.2"
   },
   "devDependencies": {
     "@babel/core": "^7.10.0",

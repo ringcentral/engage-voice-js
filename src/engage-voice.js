@@ -1,5 +1,6 @@
 import axios from 'axios'
-import RingCentral from 'ringcentral-js-concise'
+import RingCentral from './ringcentral'
+import URI from 'urijs'
 
 const version = process.env.version
 
@@ -16,20 +17,28 @@ config: ${JSON.stringify(config, null, 2)}`)
   }
 }
 
+const SERVER = 'https://engage.ringcentral.com'
+const LEGACY_SERVERS = [
+  'https://portal.vacd.biz',
+  'https://portal.virtualacd.biz'
+]
+const RINGCENTRAL_SERVER = 'https://platform.ringcentral.com'
+
 class RingCentralEngageVoice extends RingCentral {
   constructor ({
     clientId,
     clientSecret,
-    server = 'https://engage.ringcentral.com/voice',
-    authServer = 'https://engage.ringcentral.com',
-    rcServer = 'https://platform.ringcentral.com'
+    server = SERVER,
+    rcServer = RINGCENTRAL_SERVER,
+    apiPrefix = 'voice'
   }) {
     super(clientId, clientSecret, server)
     this.clientId = clientId
     this.clientSecret = clientSecret
     this.server = server
     this.rcServer = rcServer
-    this.authServer = authServer
+    this.apiPrefix = apiPrefix
+    this.isLagecy = this.isLegacyServer(server)
     this.rc = new RingCentral(clientId, clientSecret, rcServer)
     this._axios = axios.create()
     const request = this._axios.request.bind(this._axios)
@@ -46,13 +55,83 @@ class RingCentralEngageVoice extends RingCentral {
     }
   }
 
+  static SERVER = SERVER
+  static LEGACY_SERVERS = LEGACY_SERVERS
+
+  isLegacyServer (server) {
+    return RingCentralEngageVoice.LEGACY_SERVERS.includes(server)
+  }
+
+  request (config) {
+    let uri = URI(config.url)
+    if (uri.hostname() === '') {
+      const { url = '' } = config
+      const prefix = url.startsWith(this.apiPrefix) || url.startsWith('/' + this.apiPrefix)
+        ? ''
+        : this.apiPrefix
+      const path = URI.joinPaths(prefix, url)
+      uri = this.parseUrl(this.server, path)
+    }
+    return this._axios.request({
+      ...config,
+      url: uri.toString(),
+      headers: this._patchHeaders(config.headers)
+    })
+  }
+
   async authorize (...args) {
-    await this.rc.authorize(...args)
-    await this.getToken()
+    if (this.isLagecy) {
+      await this.legacyAuthorize(...args)
+    } else {
+      await this.rc.authorize(...args)
+      await this.getToken()
+    }
+  }
+
+  async legacyAuthorize (...args) {
+    await this.getLagecyToken(...args)
+  }
+
+  async getLagecyToken ({
+    username,
+    password
+  }) {
+    const url = this.server + '/api/v1/auth/login'
+    const body = `username=${username}&password=${password}`
+    const res = await this._axios.request({
+      method: 'post',
+      url,
+      data: body,
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+      }
+    })
+    const r = res.data
+    const url1 = this.server + '/api/v1/admin/token'
+    const res1 = await this._axios.request({
+      method: 'post',
+      url: url1,
+      headers: {
+        'X-Auth-Token': r.authToken || ''
+      }
+    })
+
+    const r1 = res1.data
+    this.token({
+      ...r,
+      apiToken: r1
+    })
+  }
+
+  revokeLagecyToken () {
+    if (this._token) {
+      this.delete(`/api/v1/admin/token/${this._token.apiToken}
+    X`)
+    }
   }
 
   async getToken () {
-    const url = this.authServer + '/api/auth/login/rc/accesstoken'
+    const url = this.server + '/api/auth/login/rc/accesstoken'
     const token = this.rc._token.access_token
     const body = 'rcAccessToken=' + token + '&rcTokenType=Bearer'
     const res = await this._axios.request({
@@ -68,8 +147,11 @@ class RingCentralEngageVoice extends RingCentral {
 
   _patchHeaders (headers) {
     const userAgentHeader = `ringcentral-engage-voice-js/v${version}`
+    const authHeaders = this.isLagecy
+      ? this._legacyHeader()
+      : this._bearerAuthorizationHeader()
     return {
-      ...this._bearerAuthorizationHeader(),
+      ...authHeaders,
       'X-User-Agent': userAgentHeader,
       'RC-User-Agent': userAgentHeader,
       ...headers
@@ -78,10 +160,20 @@ class RingCentralEngageVoice extends RingCentral {
 
   _bearerAuthorizationHeader () {
     let accessToken = ''
-    if (this.user) {
+    if (this._token) {
       accessToken = this._token.accessToken
     }
     return { Authorization: `Bearer ${accessToken}` }
+  }
+
+  _legacyHeader () {
+    let accessToken = ''
+    if (this._token) {
+      accessToken = this._token.apiToken
+    }
+    return {
+      'X-Auth-Token': accessToken
+    }
   }
 }
 

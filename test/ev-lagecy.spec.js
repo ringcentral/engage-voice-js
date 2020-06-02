@@ -1,9 +1,9 @@
 /* eslint-env jest */
-import { ev } from './setup'
+import { ev } from './setup-lagecy'
 
 jest.setTimeout(64000)
 
-describe('Accounts', () => {
+describe('Accounts lagecy', () => {
   test('get account list', async () => {
     let r = await ev.get('/api/v1/admin/accounts')
     r = r.data
