@@ -1,4 +1,4 @@
-# engage-voice-client-js
+# RingCentral Engage Voice API js wrapper
 
 [![Build Status](https://travis-ci.org/ringcentral/engage-voice-client-js.svg?branch=release)](https://travis-ci.org/github/ringcentral/engage-voice-client-js)
 
