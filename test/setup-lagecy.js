@@ -12,7 +12,7 @@ beforeAll(async done => {
     username: process.env.LAGECY_USERNAME,
     password: process.env.LAGECY_PASSWORD
   })
-  console.log(ev._token)
+  // console.log(ev._token)
   done()
 })
 

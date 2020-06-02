@@ -14,7 +14,7 @@ beforeAll(async done => {
     extension: process.env.RINGCENTRAL_EXTENSION,
     password: process.env.RINGCENTRAL_PASSWORD
   })
-  console.log(ev._token)
+  // console.log(ev._token)
   done()
 })
 
