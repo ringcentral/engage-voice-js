@@ -1,21 +1,8 @@
 import axios from 'axios'
-import RingCentral from './ringcentral'
+import RingCentral, { HTTPError } from './ringcentral'
 import URI from 'urijs'
 
 const version = process.env.version
-
-class HTTPError extends Error {
-  constructor (status, statusText, data, config) {
-    super(`status: ${status}
-statusText: ${statusText}
-data: ${JSON.stringify(data, null, 2)}
-config: ${JSON.stringify(config, null, 2)}`)
-    this.status = status
-    this.statusText = statusText
-    this.data = data
-    this.config = config
-  }
-}
 
 const SERVER = 'https://engage.ringcentral.com'
 const LEGACY_SERVERS = [
@@ -54,9 +41,6 @@ class RingCentralEngageVoice extends RingCentral {
       }
     }
   }
-
-  static SERVER = SERVER
-  static LEGACY_SERVERS = LEGACY_SERVERS
 
   isLegacyServer (server) {
     return RingCentralEngageVoice.LEGACY_SERVERS.includes(server)
@@ -176,5 +160,8 @@ class RingCentralEngageVoice extends RingCentral {
     }
   }
 }
+
+RingCentralEngageVoice.LEGACY_SERVERS = LEGACY_SERVERS
+RingCentralEngageVoice.SERVER = SERVER
 
 export default RingCentralEngageVoice

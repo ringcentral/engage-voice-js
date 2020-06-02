@@ -6,7 +6,7 @@ import URI from 'urijs'
 import EventEmitter from 'events'
 import multipartMixedParser from 'multipart-mixed-parser'
 
-class HTTPError extends Error {
+export class HTTPError extends Error {
   constructor (status, statusText, data, config) {
     super(`status: ${status}
 statusText: ${statusText}
