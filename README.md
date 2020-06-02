@@ -41,22 +41,22 @@ r = r.data
 expect(r.length > 0).toBe(true)
 ```
 
-For lagecy server use:
+For legacy server use:
 
 ```js
 import RingCentralEngageVoice from 'ringcentral-engage-voice-client'
 
-// LAGECY_SERVER could be
+// LEGACY_SERVER could be
 // 'https://portal.vacd.biz',
 // or  'https://portal.virtualacd.biz'
 const ev = new RingCentralEngageVoice({
-  server: process.env.LAGECY_SERVER
+  server: process.env.LEGACY_SERVER
 })
 
 // only support username/password auth
 await ev.authorize({
-  username: process.env.LAGECY_USERNAME,
-  password: process.env.LAGECY_PASSWORD
+  username: process.env.LEGACY_USERNAME,
+  password: process.env.LEGACY_PASSWORD
 })
 
 // api request
@@ -66,7 +66,7 @@ r = r.data
 expect(r.length > 0).toBe(true)
 
 // revoke api token
-ev.revokeLagecyToken()
+ev.revokeLegacyToken()
 ```
 
 ## Instance methods

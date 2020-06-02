@@ -25,7 +25,7 @@ class RingCentralEngageVoice extends RingCentral {
     this.server = server
     this.rcServer = rcServer
     this.apiPrefix = apiPrefix
-    this.isLagecy = this.isLegacyServer(server)
+    this.isLegacy = this.isLegacyServer(server)
     this.rc = new RingCentral(clientId, clientSecret, rcServer)
     this._axios = axios.create()
     const request = this._axios.request.bind(this._axios)
@@ -64,7 +64,7 @@ class RingCentralEngageVoice extends RingCentral {
   }
 
   async authorize (...args) {
-    if (this.isLagecy) {
+    if (this.isLegacy) {
       await this.legacyAuthorize(...args)
     } else {
       await this.rc.authorize(...args)
@@ -73,10 +73,10 @@ class RingCentralEngageVoice extends RingCentral {
   }
 
   async legacyAuthorize (...args) {
-    await this.getLagecyToken(...args)
+    await this.getLegacyToken(...args)
   }
 
-  async getLagecyToken ({
+  async getLegacyToken ({
     username,
     password
   }) {
@@ -107,7 +107,7 @@ class RingCentralEngageVoice extends RingCentral {
     })
   }
 
-  revokeLagecyToken () {
+  revokeLegacyToken () {
     if (this._token) {
       this.delete(`/api/v1/admin/token/${this._token.apiToken}
     X`)
@@ -131,7 +131,7 @@ class RingCentralEngageVoice extends RingCentral {
 
   _patchHeaders (headers) {
     const userAgentHeader = `ringcentral-engage-voice-js/v${version}`
-    const authHeaders = this.isLagecy
+    const authHeaders = this.isLegacy
       ? this._legacyHeader()
       : this._bearerAuthorizationHeader()
     return {
