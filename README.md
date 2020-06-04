@@ -31,7 +31,7 @@ await ev.authorize({
   password: process.env.RINGCENTRAL_PASSWORD
 })
 
-// get access token, will expire in 5 minutes
+// get access token
 const token = ev.token().accesToken
 
 // can also auth with auth code flow
