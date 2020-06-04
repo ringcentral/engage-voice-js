@@ -4,6 +4,10 @@
 
 RingCentral Engage Voice API js wrapper
 
+## Features
+
+- Auto refresh access token
+
 ## Use
 
 ```bash

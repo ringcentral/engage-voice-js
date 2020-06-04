@@ -47,12 +47,26 @@ class RingCentralEngageVoice extends EventEmitter {
     })
     this._axios = axios.create()
     const request = this._axios.request.bind(this._axios)
-    this._axios.request = async config => {
+    this._axios.request = async config => { // try to refresh token if necessary
       try {
         return await request(config)
       } catch (e) {
         if (e.response) {
-          throw new HTTPError(e.response.status, e.response.statusText, e.response.data, e.response.config)
+          if (/\bexpired\b/i.test(e.response.data)) { // access token expired
+            try {
+              console.log('on token expire e.response.data:', e.response.data)
+              await this.refresh()
+              config.headers = { ...config.headers, ...this._bearerAuthorizationHeader() }
+              return await request(config)
+            } catch (e) {
+              if (e.response) {
+                throw new HTTPError(e.response.status, e.response.statusText, e.response.data, e.response.config)
+              }
+              throw e
+            }
+          } else {
+            throw new HTTPError(e.response.status, e.response.statusText, e.response.data, e.response.config)
+          }
         } else {
           throw e
         }
@@ -156,14 +170,16 @@ class RingCentralEngageVoice extends EventEmitter {
   }
 
   async getToken (refreshToken) {
-    const url = this.server + '/api/auth/login/rc/accesstoken?includeRefresh=true'
+    const url = refreshToken
+      ? this.server + '/api/auth/token/refresh'
+      : this.server + '/api/auth/login/rc/accesstoken?includeRefresh=true'
     let token = refreshToken
     if (!token) {
       token = await this.rc.platform().auth().data() || {}
       token = token.access_token || ''
     }
     const body = refreshToken
-      ? 'refreshToken=' + token + '&rcTokenType=Bearer'
+      ? 'refresh_token=' + token + '&rcTokenType=Bearer'
       : 'rcAccessToken=' + token + '&rcTokenType=Bearer'
     const res = await this._axios.request({
       method: 'post',
