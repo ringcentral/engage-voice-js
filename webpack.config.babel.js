@@ -17,6 +17,12 @@ const defaultConfig = {
       commonjs2: 'axios',
       amd: 'axios',
       root: 'axios'
+    },
+    '@ringcentral/sdk': {
+      commonjs: 'RingCentral',
+      commonjs2: 'RingCentral',
+      amd: 'RingCentral',
+      root: 'RingCentral'
     }
   },
   plugins: [

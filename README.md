@@ -27,6 +27,9 @@ await ev.authorize({
   password: process.env.RINGCENTRAL_PASSWORD
 })
 
+// get access token, will expire in 5 minutes
+const token = ev.token().accesToken
+
 // can also auth with auth code flow
 // check https://developers.ringcentral.com/guide/authentication for more detail
 // await ev.authorize({

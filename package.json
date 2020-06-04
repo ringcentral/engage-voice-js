@@ -1,6 +1,6 @@
 {
   "name": "ringcentral-engage-voice-client",
-  "version": "1.0.2",
+  "version": "1.2.0",
   "description": "RingCentral Engage Voice API js wrapper",
   "main": "dist/engage-voice.js",
   "scripts": {
@@ -29,6 +29,7 @@
   },
   "homepage": "https://github.com/ringcentral/engage-voice-js#readme",
   "dependencies": {
+    "@ringcentral/sdk": "^4.3.0",
     "axios": "^0.19.2",
     "js-base64": "^2.5.2",
     "multipart-mixed-parser": "^0.1.3",

@@ -1,6 +1,7 @@
 import axios from 'axios'
-import RingCentral, { HTTPError } from './ringcentral'
+import { SDK } from '@ringcentral/sdk'
 import URI from 'urijs'
+import EventEmitter from 'events'
 
 const version = process.env.version
 
@@ -11,7 +12,20 @@ const LEGACY_SERVERS = [
 ]
 const RINGCENTRAL_SERVER = 'https://platform.ringcentral.com'
 
-class RingCentralEngageVoice extends RingCentral {
+export class HTTPError extends Error {
+  constructor (status, statusText, data, config) {
+    super(`status: ${status}
+statusText: ${statusText}
+data: ${JSON.stringify(data, null, 2)}
+config: ${JSON.stringify(config, null, 2)}`)
+    this.status = status
+    this.statusText = statusText
+    this.data = data
+    this.config = config
+  }
+}
+
+class RingCentralEngageVoice extends EventEmitter {
   constructor ({
     clientId,
     clientSecret,
@@ -26,10 +40,14 @@ class RingCentralEngageVoice extends RingCentral {
     this.rcServer = rcServer
     this.apiPrefix = apiPrefix
     this.isLegacy = this.isLegacyServer(server)
-    this.rc = new RingCentral(clientId, clientSecret, rcServer)
+    this.rc = new SDK({
+      server: rcServer,
+      clientId,
+      clientSecret
+    })
     this._axios = axios.create()
     const request = this._axios.request.bind(this._axios)
-    this._axios.request = async config => { // try to refresh token if necessary
+    this._axios.request = async config => {
       try {
         return await request(config)
       } catch (e) {
@@ -40,6 +58,29 @@ class RingCentralEngageVoice extends RingCentral {
         }
       }
     }
+  }
+
+  parseUrl (uri, path) {
+    const u = URI(uri)
+    const pathJoined = URI.joinPaths(u, path)
+    return u.path(pathJoined)
+  }
+
+  token (_token) {
+    if (arguments.length === 0) {
+      return this._token
+    }
+    const tokenChanged = this._token !== _token
+    this._token = _token
+    if (tokenChanged) {
+      this.emit('tokenChanged', _token)
+    }
+  }
+
+  refresh () {
+    return this.getToken(
+      this._token.refreshToken
+    )
   }
 
   isLegacyServer (server) {
@@ -67,7 +108,7 @@ class RingCentralEngageVoice extends RingCentral {
     if (this.isLegacy) {
       await this.legacyAuthorize(...args)
     } else {
-      await this.rc.authorize(...args)
+      await this.rc.login(...args)
       await this.getToken()
     }
   }
@@ -114,10 +155,16 @@ class RingCentralEngageVoice extends RingCentral {
     }
   }
 
-  async getToken () {
-    const url = this.server + '/api/auth/login/rc/accesstoken'
-    const token = this.rc._token.access_token
-    const body = 'rcAccessToken=' + token + '&rcTokenType=Bearer'
+  async getToken (refreshToken) {
+    const url = this.server + '/api/auth/login/rc/accesstoken?includeRefresh=true'
+    let token = refreshToken
+    if (!token) {
+      token = await this.rc.platform().auth().data() || {}
+      token = token.access_token || ''
+    }
+    const body = refreshToken
+      ? 'refreshToken=' + token + '&rcTokenType=Bearer'
+      : 'rcAccessToken=' + token + '&rcTokenType=Bearer'
     const res = await this._axios.request({
       method: 'post',
       url,
@@ -126,7 +173,8 @@ class RingCentralEngageVoice extends RingCentral {
         'Content-Type': 'application/x-www-form-urlencoded'
       }
     })
-    this.token(res.data)
+    const r = res.data
+    this.token(r)
   }
 
   _patchHeaders (headers) {
@@ -158,6 +206,26 @@ class RingCentralEngageVoice extends RingCentral {
     return {
       'X-Auth-Token': accessToken
     }
+  }
+
+  get (url, config = {}) {
+    return this.request({ ...config, method: 'get', url })
+  }
+
+  delete (url, config = {}) {
+    return this.request({ ...config, method: 'delete', url })
+  }
+
+  post (url, data = undefined, config = {}) {
+    return this.request({ ...config, method: 'post', url, data })
+  }
+
+  put (url, data = undefined, config = {}) {
+    return this.request({ ...config, method: 'put', url, data })
+  }
+
+  patch (url, data = undefined, config = {}) {
+    return this.request({ ...config, method: 'patch', url, data })
   }
 }
 

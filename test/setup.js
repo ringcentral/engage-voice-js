@@ -4,7 +4,7 @@ import RingCentral from '../src/engage-voice'
 let ev
 
 beforeAll(async done => {
-  jest.setTimeout(64000)
+  jest.setTimeout(6400000)
   ev = new RingCentral({
     clientId: process.env.RINGCENTRAL_CLIENTID,
     clientSecret: process.env.RINGCENTRAL_CLIENTSECRET
@@ -19,7 +19,7 @@ beforeAll(async done => {
 })
 
 afterAll(async done => {
-  await ev.rc.revoke()
+  await ev.rc.platform().auth().cancelAccessToken()
   done()
 })
 
