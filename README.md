@@ -2,7 +2,7 @@
 
 [![Build Status](https://travis-ci.org/ringcentral/engage-voice-js.svg?branch=release)](https://travis-ci.org/github/ringcentral/engage-voice-js)
 
-RingCentral Engage Voice Clientt SDK for JavaScript.
+RingCentral Engage Voice Client SDK for JavaScript.
 
 ## Features
 
