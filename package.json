@@ -4,9 +4,10 @@
   "description": "RingCentral Engage Voice API js wrapper",
   "main": "dist/engage-voice.js",
   "scripts": {
-    "test": "standard && jest",
+    "test": "standard && jest --coverage",
     "release": "webpack --progress --colors",
-    "prepublishOnly": "npm run release"
+    "prepublishOnly": "npm run release",
+    "coveralls": "coveralls"
   },
   "repository": {
     "type": "git",
@@ -42,6 +43,7 @@
     "babel-eslint": "^10.1.0",
     "babel-jest": "^26.0.1",
     "babel-loader": "^8.1.0",
+    "coveralls": "^3.1.0",
     "dotenv": "^8.2.0",
     "dotenv-override-true": "^6.2.0",
     "form-data": "^3.0.0",

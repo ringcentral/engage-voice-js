@@ -12,6 +12,7 @@ const LEGACY_SERVERS = [
 ]
 const RINGCENTRAL_SERVER = 'https://platform.ringcentral.com'
 
+/* istanbul ignore next */
 export class HTTPError extends Error {
   constructor (status, statusText, data, config) {
     super(`status: ${status}
@@ -51,6 +52,7 @@ class RingCentralEngageVoice extends EventEmitter {
       try {
         return await request(config)
       } catch (e) {
+        /* istanbul ignore next */
         if (e.response) {
           if (/\bexpired\b/i.test(e.response.data)) { // access token expired
             try {

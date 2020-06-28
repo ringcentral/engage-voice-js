@@ -17,6 +17,30 @@ describe('Accounts', () => {
     )
     let r = await ev.get('/api/v1/admin/accounts')
     r = r.data
+    try {
+      await ev.post('/api/vx/admin/accounts')
+    } catch (e) {
+      expect(e.status).toBe(404)
+      console.log(e)
+    }
+    try {
+      await ev.put('/api/vx/admin/accounts')
+    } catch (e) {
+      expect(e.status).toBe(404)
+      console.log(e)
+    }
+    try {
+      await ev.patch('/api/vx/admin/accounts')
+    } catch (e) {
+      expect(e.status).toBe(404)
+      console.log(e)
+    }
+    try {
+      await ev.delete('/api/vx/admin/accounts')
+    } catch (e) {
+      expect(e.status).toBe(404)
+      console.log(e)
+    }
     expect(r.length > 0).toBe(true)
   })
 })
