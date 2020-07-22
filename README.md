@@ -91,6 +91,25 @@ ev.delete (url, config = {})
 
 ev.patch(url, data = undefined, config = {})
 
+## Test
+
+```bash
+npm i
+cp env-sample.env .env
+# then edit .env fill all fields
+npm run test
+```
+
+## Run demo code
+
+```bash
+cd demo
+npm i
+cp env-sample.env .env
+# then edit .env fill all fields
+npm start
+```
+
 ## Credits
 
 Based on tyler's [ringcentral-js-concise](https://github.com/tylerlong/ringcentral-js-concise)

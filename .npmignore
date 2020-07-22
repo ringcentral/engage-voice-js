@@ -18,4 +18,4 @@ webpack.config.babel.js
 yarn.lock
 /bin/
 env-sample.env
-
+/demo/
