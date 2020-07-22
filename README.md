@@ -108,6 +108,7 @@ npm i
 cp env-sample.env .env
 # then edit .env fill all fields
 npm start
+# edit index.js to play
 ```
 
 ## Credits

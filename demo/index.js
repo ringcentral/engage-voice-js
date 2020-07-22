@@ -1,7 +1,4 @@
-global.RingCentral = require('@ringcentral/sdk')
-global.axios = require('axios')
 
-// eslint-disable-next-line
 import RingCentralEngageVoice from 'ringcentral-engage-voice-client'
 
 async function run () {
