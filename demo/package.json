@@ -13,5 +13,8 @@
     "@babel/register": "^7.9.0",
     "dotenv": "^8.2.0",
     "ringcentral-engage-voice-client": "^1.34.0"
+  },
+  "dependencies": {
+    "@babel/core": "^7.12.9"
   }
 }
