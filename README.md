@@ -16,7 +16,9 @@ npm i ringcentral-engage-voice-client
 ```
 
 ```js
-import RingCentralEngageVoice from 'ringcentral-engage-voice-client'
+const RingCentralEngageVoice = require('ringcentral-engage-voice-client').default
+// or
+// import RingCentralEngageVoice from 'ringcentral-engage-voice-client'
 
 // create from ringcentral app client id /secret
 // you can create app from https://developer.ringcentral.com
@@ -52,7 +54,9 @@ expect(r.length > 0).toBe(true)
 For legacy server use:
 
 ```js
-import RingCentralEngageVoice from 'ringcentral-engage-voice-client'
+const RingCentralEngageVoice = require('ringcentral-engage-voice-client').default
+// or
+// import RingCentralEngageVoice from 'ringcentral-engage-voice-client'
 
 // LEGACY_SERVER could be
 // 'https://portal.vacd.biz',
