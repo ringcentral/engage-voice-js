@@ -1,5 +1,5 @@
 /* eslint-env jest */
-import RingCentral from '../src/engage-voice'
+import RingCentral from '../src/engage-voice.ts'
 
 let ev
 

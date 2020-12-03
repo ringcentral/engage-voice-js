@@ -21,25 +21,25 @@ describe('Accounts', () => {
       await ev.post('/api/vx/admin/accounts')
     } catch (e) {
       expect(e.status).toBe(404)
-      console.log(e)
+      // console.log(e)
     }
     try {
       await ev.put('/api/vx/admin/accounts')
     } catch (e) {
       expect(e.status).toBe(404)
-      console.log(e)
+      // console.log(e)
     }
     try {
       await ev.patch('/api/vx/admin/accounts')
     } catch (e) {
       expect(e.status).toBe(404)
-      console.log(e)
+      // console.log(e)
     }
     try {
       await ev.delete('/api/vx/admin/accounts')
     } catch (e) {
       expect(e.status).toBe(404)
-      console.log(e)
+      // console.log(e)
     }
     expect(r.length > 0).toBe(true)
   })

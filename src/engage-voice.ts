@@ -1,20 +1,18 @@
-import axios from 'axios'
-import { SDK } from '@ringcentral/sdk'
-import URI from 'urijs'
-import EventEmitter from 'events'
+import axios, { AxiosInstance } from 'axios'
+import { SDK, LoginOptions } from '@ringcentral/sdk'
+import { URL } from 'url'
+import { EventEmitter } from 'events'
+import { Options, Token, Config, Data } from './types'
 
 const version = process.env.version
 
-const SERVER = 'https://engage.ringcentral.com'
-const LEGACY_SERVERS = [
-  'https://portal.vacd.biz',
-  'https://portal.virtualacd.biz'
-]
-const RINGCENTRAL_SERVER = 'https://platform.ringcentral.com'
-
 /* istanbul ignore next */
 export class HTTPError extends Error {
-  constructor (status, statusText, data, config) {
+  status: number
+  statusText: string
+  data: Data
+  config: Config
+  constructor (status: number, statusText: string, data: Data, config: Config) {
     super(`status: ${status}
 statusText: ${statusText}
 data: ${JSON.stringify(data, null, 2)}
@@ -27,14 +25,34 @@ config: ${JSON.stringify(config, null, 2)}`)
 }
 
 class RingCentralEngageVoice extends EventEmitter {
+  clientId: string
+  server: string
+  clientSecret: string
+  rcServer: string
+  apiPrefix: string
+  redirectUri: string | undefined
+  _axios: AxiosInstance
+  _token: Token | undefined
+  isLegacy: Boolean
+  rc: SDK
+
+  static LEGACY_SERVERS = [
+    'https://portal.vacd.biz',
+    'https://portal.virtualacd.biz'
+  ]
+
+  static SERVER = 'https://engage.ringcentral.com'
+
+  static RINGCENTRAL_SERVER = 'https://platform.ringcentral.com'
+
   constructor ({
     clientId,
     clientSecret,
-    server = SERVER,
-    rcServer = RINGCENTRAL_SERVER,
+    server = RingCentralEngageVoice.SERVER,
+    rcServer = RingCentralEngageVoice.RINGCENTRAL_SERVER,
     apiPrefix = 'voice'
-  }) {
-    super(clientId, clientSecret, server)
+  }: Options) {
+    super()
     this.clientId = clientId
     this.clientSecret = clientSecret
     this.server = server
@@ -76,13 +94,7 @@ class RingCentralEngageVoice extends EventEmitter {
     }
   }
 
-  parseUrl (uri, path) {
-    const u = URI(uri)
-    const pathJoined = URI.joinPaths(u, path)
-    return u.path(pathJoined)
-  }
-
-  token (_token) {
+  token (_token: Token) {
     if (arguments.length === 0) {
       return this._token
     }
@@ -95,48 +107,47 @@ class RingCentralEngageVoice extends EventEmitter {
 
   refresh () {
     return this.getToken(
-      this._token.refreshToken
+      this._token ? this._token.refreshToken : ''
     )
   }
 
-  isLegacyServer (server) {
+  isLegacyServer (server: string) {
     return RingCentralEngageVoice.LEGACY_SERVERS.includes(server)
   }
 
-  request (config) {
-    let uri = URI(config.url)
-    if (uri.hostname() === '') {
+  request (config: Config) {
+    let u = config.url
+    if (!config.url.startsWith('http')) {
       const { url = '' } = config
       const prefix = url.startsWith(this.apiPrefix) || url.startsWith('/' + this.apiPrefix)
-        ? ''
-        : this.apiPrefix
-      const path = URI.joinPaths(prefix, url)
-      uri = this.parseUrl(this.server, path)
+        ? '/'
+        : '/' + this.apiPrefix + '/'
+      u = new URL(url.replace(/^\//, ''), this.server + prefix).toString()
     }
     return this._axios.request({
       ...config,
-      url: uri.toString(),
+      url: u,
       headers: this._patchHeaders(config.headers)
     })
   }
 
-  async authorize (...args) {
+  async authorize (options: LoginOptions) {
     if (this.isLegacy) {
-      await this.legacyAuthorize(...args)
+      await this.legacyAuthorize(options)
     } else {
-      await this.rc.login(...args)
-      await this.getToken()
+      await this.rc.login(options)
+      await this.getToken(undefined)
     }
   }
 
-  async legacyAuthorize (...args) {
-    await this.getLegacyToken(...args)
+  async legacyAuthorize (options: LoginOptions) {
+    await this.getLegacyToken(options)
   }
 
   async getLegacyToken ({
     username,
     password
-  }) {
+  }: LoginOptions) {
     const url = this.server + '/api/v1/auth/login'
     const body = `username=${username}&password=${password}`
     const res = await this._axios.request({
@@ -166,19 +177,18 @@ class RingCentralEngageVoice extends EventEmitter {
 
   revokeLegacyToken () {
     if (this._token) {
-      this.delete(`/api/v1/admin/token/${this._token.apiToken}
-    X`)
+      return this.delete(`/api/v1/admin/token/${this._token.apiToken}`)
     }
   }
 
-  async getToken (refreshToken) {
+  async getToken (refreshToken: string | undefined) {
     const url = refreshToken
       ? this.server + '/api/auth/token/refresh'
       : this.server + '/api/auth/login/rc/accesstoken?includeRefresh=true'
     let token = refreshToken
     if (!token) {
-      token = await this.rc.platform().auth().data() || {}
-      token = token.access_token || ''
+      const d = await this.rc.platform().auth().data() || {}
+      token = d.access_token || ''
     }
     const body = refreshToken
       ? 'refresh_token=' + token + '&rcTokenType=Bearer'
@@ -195,7 +205,7 @@ class RingCentralEngageVoice extends EventEmitter {
     this.token(r)
   }
 
-  _patchHeaders (headers) {
+  _patchHeaders (headers: Data = {}) {
     const userAgentHeader = `ringcentral-engage-voice-js/v${version}`
     const authHeaders = this.isLegacy
       ? this._legacyHeader()
@@ -226,28 +236,25 @@ class RingCentralEngageVoice extends EventEmitter {
     }
   }
 
-  get (url, config = {}) {
+  get (url: string, config: Config = {}) {
     return this.request({ ...config, method: 'get', url })
   }
 
-  delete (url, config = {}) {
+  delete (url: string, config: Config = {}) {
     return this.request({ ...config, method: 'delete', url })
   }
 
-  post (url, data = undefined, config = {}) {
+  post (url: string, data: Data | undefined = undefined, config: Config = {}) {
     return this.request({ ...config, method: 'post', url, data })
   }
 
-  put (url, data = undefined, config = {}) {
+  put (url: string, data: Data | undefined = undefined, config: Config = {}) {
     return this.request({ ...config, method: 'put', url, data })
   }
 
-  patch (url, data = undefined, config = {}) {
+  patch (url: string, data: Data | undefined = undefined, config: Config = {}) {
     return this.request({ ...config, method: 'patch', url, data })
   }
 }
-
-RingCentralEngageVoice.LEGACY_SERVERS = LEGACY_SERVERS
-RingCentralEngageVoice.SERVER = SERVER
 
 export default RingCentralEngageVoice

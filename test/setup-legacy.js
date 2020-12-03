@@ -1,5 +1,5 @@
 /* eslint-env jest */
-import RingCentral from '../src/engage-voice'
+import RingCentral from '../src/engage-voice.ts'
 
 let ev
 
@@ -11,13 +11,12 @@ beforeAll(async done => {
   await ev.authorize({
     username: process.env.LEGACY_USERNAME,
     password: process.env.LEGACY_PASSWORD
-  })
-  // console.log(ev._token)
+  }).catch(console.log)
   done()
 })
 
 afterAll(async done => {
-  await ev.revokeLegacyToken()
+  await ev.revokeLegacyToken().catch(console.log)
   done()
 })
 
