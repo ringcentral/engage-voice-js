@@ -4,14 +4,17 @@ const pack = require('./package.json')
 const defaultConfig = {
   mode: 'production',
   devtool: 'source-map',
-  entry: './src/engage-voice.js',
+  entry: './src/engage-voice.ts',
   output: {
-    filename: 'engage-voice.ts',
+    filename: 'engage-voice.js',
     library: 'RingCentralEngageVoice',
     libraryTarget: 'umd',
     globalObject: 'this' // fix window undefined issue in node
   },
   resolve: {
+    fallback: {
+      url: require.resolve('url')
+    },
     extensions: ['.tsx', '.ts', '.js']
   },
   externals: {
@@ -26,6 +29,12 @@ const defaultConfig = {
       commonjs2: '@ringcentral/sdk',
       amd: '@ringcentral/sdk',
       root: 'RingCentral'
+    },
+    url: {
+      commonjs: 'url',
+      commonjs2: 'url',
+      amd: 'url',
+      root: 'url'
     }
   },
   module: {

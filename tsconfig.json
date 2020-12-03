@@ -9,6 +9,7 @@
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true
   },
+  "include": ["./src/*.ts"],
   "$schema": "https://json.schemastore.org/tsconfig",
   "display": "Recommended",
   "extends": "@tsconfig/recommended/tsconfig.json"
