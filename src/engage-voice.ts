@@ -212,6 +212,7 @@ class RingCentralEngageVoice extends EventEmitter {
       : this._bearerAuthorizationHeader()
     return {
       ...authHeaders,
+      'Content-Type': 'application/json',
       'X-User-Agent': userAgentHeader,
       'RC-User-Agent': userAgentHeader,
       ...headers
