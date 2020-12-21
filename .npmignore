@@ -19,3 +19,6 @@ yarn.lock
 /bin/
 env-sample.env
 /demo/
+/coverage/
+/tsconfig.json
+/*.yml
