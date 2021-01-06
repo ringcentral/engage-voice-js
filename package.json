@@ -33,7 +33,7 @@
   "homepage": "https://github.com/ringcentral/engage-voice-js#readme",
   "dependencies": {
     "@ringcentral/sdk": "^4.4.0",
-    "axios": "^0.19.2"
+    "axios": "^0.21.1"
   },
   "devDependencies": {
     "@babel/core": "^7.12.9",
