@@ -2,6 +2,7 @@
 
 [![Build Status](https://travis-ci.org/ringcentral/engage-voice-js.svg?branch=release)](https://travis-ci.org/github/ringcentral/engage-voice-js)
 [![Coverage Status](https://coveralls.io/repos/github/ringcentral/engage-voice-js/badge.svg?branch=release)](https://coveralls.io/github/ringcentral/engage-voice-js?branch=release)
+[![Community](https://img.shields.io/badge/community-dev_forums-blue)](https://community.ringcentral.com/spaces/144/index.html)
 
 RingCentral Engage Voice Client SDK for JavaScript.
 
