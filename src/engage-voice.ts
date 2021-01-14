@@ -149,7 +149,7 @@ class RingCentralEngageVoice extends EventEmitter {
     password
   }: LoginOptions) {
     const url = this.server + '/api/v1/auth/login'
-    const body = `username=${username}&password=${password}`
+    const body = `username=${encodeURIComponent(username || '')}&password=${password}`
     const res = await this._axios.request({
       method: 'post',
       url,

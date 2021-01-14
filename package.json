@@ -1,6 +1,6 @@
 {
   "name": "ringcentral-engage-voice-client",
-  "version": "1.37.1",
+  "version": "1.37.2",
   "description": "RingCentral Engage Voice API js wrapper",
   "main": "dist/engage-voice",
   "module": "src/engage-voice.ts",
