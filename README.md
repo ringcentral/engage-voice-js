@@ -27,15 +27,20 @@ const ev = new RingCentralEngageVoice({
   clientSecret: process.env.RINGCENTRAL_CLIENTSECRET
 })
 
-// auth with password flow
+// auth with jwt
 await ev.authorize({
-  username: process.env.RINGCENTRAL_USERNAME,
-  extension: process.env.RINGCENTRAL_EXTENSION,
-  password: process.env.RINGCENTRAL_PASSWORD
+  jwt: process.env.RINGCENTRAL_JWT
 })
 
 // get access token
-const token = ev.token().accesToken
+const token = ev.token().accessToken
+
+// can also auth with password flow
+// await ev.authorize({
+//   username: process.env.RINGCENTRAL_USERNAME,
+//   extension: process.env.RINGCENTRAL_EXTENSION,
+//   password: process.env.RINGCENTRAL_PASSWORD
+// })
 
 // can also auth with auth code flow
 // check https://developers.ringcentral.com/guide/authentication for more detail

@@ -1,5 +1,4 @@
-
-import RingCentralEngageVoice from 'ringcentral-engage-voice-client'
+const RingCentralEngageVoice = require('ringcentral-engage-voice-client').default
 
 async function run () {
   const ev = new RingCentralEngageVoice({
@@ -7,9 +6,7 @@ async function run () {
     clientSecret: process.env.RINGCENTRAL_CLIENTSECRET
   })
   await ev.authorize({
-    username: process.env.RINGCENTRAL_USERNAME,
-    extension: process.env.RINGCENTRAL_EXTENSION,
-    password: process.env.RINGCENTRAL_PASSWORD
+    jwt: process.env.RINGCENTRAL_JWT
   })
   let r = await ev.get('/api/v1/admin/accounts')
   r = r.data
